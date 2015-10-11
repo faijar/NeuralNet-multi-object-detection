@@ -97,8 +97,10 @@ showImage();
 
 }
 
-void writeMatToFile(cv::Mat& m, const char* filename, int value)
-{		cvtColor(m, m, CV_BGR2GRAY);
+void writeMatToFile(cv::Mat& mats, const char* filename, int value)
+{		
+		Mat m;
+		cvtColor(mats, m, CV_BGR2GRAY);
 		equalizeHist(m, m);
 
 		int histSize = 256; // bin size
@@ -129,7 +131,7 @@ void writeMatToFile(cv::Mat& m, const char* filename, int value)
 		Size size(35,25);//the dst image size,e.g.100x100
 		imshow("bin", m);
 		resize(m,m,size);//resize image
-    		ofstream fout(filename);
+    		ofstream fout(filename, ios::app);
 	
     if(!fout)
     {
@@ -141,12 +143,12 @@ void writeMatToFile(cv::Mat& m, const char* filename, int value)
         for(int j=0; j<m.cols; j++)
         {
 	    int pix = m.at<uchar>(i,j);
-            fout<< pix <<"\t";
+            fout<< pix <<",";
         }
-	fout<< value << "\n";
-        fout<<endl;
+	
     }
-
+     fout<< value;
+    fout<<endl;
     fout.close();
 }
 
@@ -158,11 +160,11 @@ int main()
 	int ys2 = 1;
     const char* filename = "data.txt";
 
-    src=imread("0002.png",1);
+    //src=imread("0002.png",1);
 
     namedWindow(winName,WINDOW_NORMAL);
     setMouseCallback(winName,onMouse,NULL );
-    imshow(winName,src);
+    //imshow(winName,src);
 
     while(1){
 	sprintf(name, "source/%04d.png", y);
