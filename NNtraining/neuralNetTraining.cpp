@@ -11,7 +11,7 @@ using namespace cv;
 
 #define TRAINING_SAMPLES 2468   //625       //Number of samples in training dataset
 #define ATTRIBUTES 875  //Number of pixels per sample.16X16
-#define TEST_SAMPLES 500         //424      //Number of samples in test dataset
+#define TEST_SAMPLES 600         //424      //Number of samples in test dataset
 #define CLASSES 6                  //Number of distinct labels.
 
 float jumIndex = 0;
@@ -132,12 +132,12 @@ int main(int argc, char** argv)
 	//nnetwork->setTrainMethod()
 	cv::Mat layers(3, 1, CV_32S);
 	layers.at<int>(0, 0) = ATTRIBUTES;//input layer
-	layers.at<int>(1, 0) = 2400 ;//hidden layer
+	layers.at<int>(1, 0) = 600 ;//hidden layer
 	layers.at<int>(2, 0) = CLASSES;//output layer
 	nnetwork->setLayerSizes( layers );
 	
-	nnetwork->setActivationFunction( cv::ml::ANN_MLP::SIGMOID_SYM, 0.3, 0.5 );
-	nnetwork->setTrainMethod(cv::ml::ANN_MLP::BACKPROP, 0.3, 0.2);
+	nnetwork->setActivationFunction( cv::ml::ANN_MLP::SIGMOID_SYM, 0.4, 0.3 );
+	//nnetwork->setTrainMethod(cv::ml::ANN_MLP::BACKPROP, 0.3, 0.2);
 
 	//create the neural network.
 	//for more details check http://docs.opencv.org/modules/ml/doc/neural_networks.html
