@@ -13,7 +13,7 @@ Rect cropRect(0,0,0,0);
 
 const char* winName="Crop Image";
 bool clicked=false;
-int i=0;
+int i=2030;
 char imgName[15];
 
 
@@ -155,7 +155,7 @@ void writeMatToFile(cv::Mat& mats, const char* filename, int value)
 int main()
 {
     char name[2000];
-	int y = 1;
+	int y = 176;
 	int ys = 1;
 	int ys2 = 1;
     const char* filename = "data.txt";
