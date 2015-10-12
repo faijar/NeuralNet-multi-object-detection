@@ -10,8 +10,8 @@ using namespace std;
 using namespace cv;
 int thresh = 250;
 
-#define ATTRIBUTES 400  //Number of pixels per sample.16X16
-#define CLASSES 7
+#define ATTRIBUTES 875  //Number of pixels per sample.16X16
+#define CLASSES 6
 
 int main()
 {
@@ -20,9 +20,11 @@ int main()
 	int ys = 1;
 	int ys2 = 1;
 	
-	cv::String file_name = "model.xml";
-	cv::Ptr<cv::ml::ANN_MLP> nnetwork = ml::StatModel::load<ml::ANN_MLP>(file_name);
-		
+	const String file_name = "model87.xml";
+	//cv::Ptr<cv::ml::ANN_MLP> nnetwork = ml::StatModel::load<ml::ANN_MLP>("model.xml");
+	Ptr<ml::ANN_MLP> nnetwork = ml::ANN_MLP::create();
+	cv::FileStorage read("model.xml", cv::FileStorage::READ);
+        nnetwork->read(read.root());	
 
 	while (1){
 
@@ -100,12 +102,13 @@ int main()
 					//largest_area = a;
 					//largest_contour_index = i;                //Store the index of largest contour
 					bounding_rect = boundingRect(contours[i]); // Find the bounding rectangle for biggest contour
-					rectangle(src, bounding_rect, Scalar(200, 255, 100), 2, 8, 0);
+					
 					//drawContours(src, contours, 0, Scalar(100, 255, 100), 1, 8, hierarchy);
 					Mat imgSrc1 = src(bounding_rect);
-					imwrite("data/data1-"+ is + ".png", src);
+					
 					
 					//pre-processing predict
+					cvtColor(imgSrc1, imgSrc1, CV_BGR2GRAY);
 					equalizeHist(imgSrc1, imgSrc1);
 					medianBlur(imgSrc1, imgSrc1, 5);
 					threshold(imgSrc1, imgSrc1, havg-20 , 255, THRESH_BINARY | THRESH_OTSU);
@@ -114,10 +117,14 @@ int main()
 					resize(imgSrc1,imgSrc1,size);//resize image
 
 					//Neural network predict
-					cv::Mat data(1, ATTRIBUTES, CV_32FC1);
-					data = imgSrc1.clone();
+					cv::Mat data(1, ATTRIBUTES, CV_32F);
+					Mat dat = imgSrc1.reshape(0,1);
+					dat.convertTo(dat, CV_32F);
+					//data = dat.clone();
+					//imgSrc1.copyTo(data(Rect(0, 0, imgSrc1.cols, imgSrc1.rows)));
+					cout<< data.cols;
 					int maxIndex = 0;
-					cv::Mat classOut(1, CLASSES, CV_32FC1);
+					cv::Mat classOut(1, CLASSES, CV_32F);
 					nnetwork->predict(data, classOut);
 					float value;
 					float maxValue = classOut.at<float>(0, 0);
@@ -131,10 +138,24 @@ int main()
 						}
 					}
 
-					int a = data.rows;
+					if(maxIndex == 0){
+						rectangle(src, bounding_rect, Scalar(200, 255, 100), 2, 8, 0);//button color cyan
+					}else if(maxIndex == 1){
+						rectangle(src, bounding_rect, Scalar(0, 255, 0), 2, 8, 0); //text color green
+					}else if(maxIndex == 2){
+						rectangle(src, bounding_rect, Scalar(255, 0, 0), 2, 8, 0);//image color blue
+					}else if(maxIndex == 3){
+						rectangle(src, bounding_rect, Scalar(0, 0, 255), 2, 8, 0);//datepicker color red
+					}else if(maxIndex == 4){
+						rectangle(src, bounding_rect, Scalar(100, 255, 255), 2, 8, 0);//dropdown color yellow
+					}else if(maxIndex == 5){
+						rectangle(src, bounding_rect, Scalar(255, 255, 0), 2, 8, 0);// tabs color light blue
+					}else if(maxIndex == 6){
+						rectangle(src, bounding_rect, Scalar(200, 0, 200), 2, 8, 0);// other
+					}
 
 					
-					
+					imwrite("data/data1-"+ is + ".png", src);
 
 					
 				}
