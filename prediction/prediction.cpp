@@ -13,7 +13,7 @@ int thresh = 250;
 #define ATTRIBUTES 875  //Number of pixels per sample.16X16
 #define CLASSES 6
 
-int main()
+int main(int argc, char** argv)
 {
 	char name[2000];
 	int y = 1;
@@ -26,10 +26,11 @@ int main()
 	cv::FileStorage read("model.xml", cv::FileStorage::READ);
         nnetwork->read(read.root());	
 
-	while (1){
+	//while (1){
 
-		sprintf(name, "images/%04d.png", y);
-		Mat src = imread(name, 1);
+		//sprintf(name, "images/%04d.png", y);
+		//Mat src = imread(name, 1);
+		Mat src = imread( argv[1], 1 );
 		Mat disp;
 		src.copyTo(disp);
 		if (!src.data)                              // Check for invalid input
@@ -122,7 +123,7 @@ int main()
 					dat.convertTo(dat, CV_32F);
 					//data = dat.clone();
 					//imgSrc1.copyTo(data(Rect(0, 0, imgSrc1.cols, imgSrc1.rows)));
-					cout<< data.cols;
+					//cout<< data.cols;
 					int maxIndex = 0;
 					cv::Mat classOut(1, CLASSES, CV_32F);
 					nnetwork->predict(data, classOut);
@@ -137,7 +138,7 @@ int main()
 							maxIndex = index;
 						}
 					}
-
+					cout<<"prediction class index :" <<maxIndex <<"\n";
 					if(maxIndex == 0){
 						rectangle(src, bounding_rect, Scalar(200, 255, 100), 2, 8, 0);//button color cyan
 					}else if(maxIndex == 1){
@@ -155,7 +156,7 @@ int main()
 					}
 
 					
-					imwrite("data/data1-"+ is + ".png", src);
+					//imwrite("data/data1-"+ is + ".png", src);
 
 					
 				}
@@ -189,7 +190,7 @@ int main()
 		//imwrite("contour result 1391076a-ed94-4060-8bb7-102e8597f8fe.png", src);
 		y++;
 		//waitKey();
-	}
+	//}
 	//imshow("largest Contour", dst);
 	waitKey();
 }
