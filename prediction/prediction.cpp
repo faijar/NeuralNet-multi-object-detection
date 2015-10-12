@@ -138,7 +138,7 @@ int main(int argc, char** argv)
 							maxIndex = index;
 						}
 					}
-					cout<<"prediction class index :" <<maxIndex <<"\n";
+					cout<<maxIndex <<"\n";
 					if(maxIndex == 0){
 						rectangle(src, bounding_rect, Scalar(200, 255, 100), 2, 8, 0);//button color cyan
 					}else if(maxIndex == 1){
