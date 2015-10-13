@@ -25,6 +25,7 @@ int main(int argc, char** argv)
 	Ptr<ml::ANN_MLP> nnetwork = ml::ANN_MLP::create();
 	cv::FileStorage read("model.xml", cv::FileStorage::READ);
         nnetwork->read(read.root());	
+	nnetwork->setActivationFunction( cv::ml::ANN_MLP::SIGMOID_SYM );
 
 	//while (1){
 
@@ -80,11 +81,11 @@ int main(int argc, char** argv)
 	//	threshold(thr, thr1, 86, 255, THRESH_BINARY); //Threshold the gray
 		threshold(thr, thr, havg-20 , 255, THRESH_BINARY | THRESH_OTSU);
 		//adaptiveThreshold(thr, thr, 255, ADAPTIVE_THRESH_GAUSSIAN_C, THRESH_BINARY,11, 3);
-		imshow("threashold", thr);
+		//imshow("threashold", thr);
 		vector<vector<Point> > contours; // Vector for storing contour
 		vector<Vec4i> hierarchy;
 		//Canny(thr, thr, thresh, thresh * 2, 3);
-		findContours(thr, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE); // Find the contours in the image
+		//findContours(thr, contours, hierarchy, CV_RETR_CCOMP, CV_CHAIN_APPROX_SIMPLE); // Find the contours in the image
 
 		vector<vector<Point> > contours2; // Vector for storing contour
 		vector<Vec4i> hierarchy2;
@@ -94,37 +95,38 @@ int main(int argc, char** argv)
 		ss << ys;		
 		String is = ss.str();
 		//String is2 = totring(ys2);
-		for (int i = 0; i < contours.size(); i++) // iterate through each contour. 
-		{
+		//for (int i = 0; i < contours.size(); i++) // iterate through each contour. 
+		//{
 			//if (hierarchy[i][2] >= 0){
-				double a = contourArea(contours[i], false);  //  Find the area of contour
-				if (a > 250){
+		//		double a = contourArea(contours[i], false);  //  Find the area of contour
+		//		if (a > 250){
 
 					//largest_area = a;
 					//largest_contour_index = i;                //Store the index of largest contour
-					bounding_rect = boundingRect(contours[i]); // Find the bounding rectangle for biggest contour
+					//bounding_rect = boundingRect(contours[i]); // Find the bounding rectangle for biggest contour
 					
 					//drawContours(src, contours, 0, Scalar(100, 255, 100), 1, 8, hierarchy);
-					Mat imgSrc1 = src(bounding_rect);
-					
+					//Mat imgSrc1 = src(bounding_rect);
+					//Mat imgSrc1 = src;
+					//imshow("imgsrc", imgSrc1);
 					
 					//pre-processing predict
-					cvtColor(imgSrc1, imgSrc1, CV_BGR2GRAY);
-					equalizeHist(imgSrc1, imgSrc1);
-					medianBlur(imgSrc1, imgSrc1, 5);
-					threshold(imgSrc1, imgSrc1, havg-20 , 255, THRESH_BINARY | THRESH_OTSU);
+					//cvtColor(imgSrc1, imgSrc1, CV_BGR2GRAY);
+					//equalizeHist(imgSrc1, imgSrc1);
+					//medianBlur(imgSrc1, imgSrc1, 5);
+					//threshold(imgSrc1, imgSrc1, havg-20 , 255, THRESH_BINARY | THRESH_OTSU);
 					//adaptiveThreshold(imgSrc1, imgSrc1, 255, ADAPTIVE_THRESH_MEAN_C, THRESH_BINARY_INV, 3, 0);
 					Size size(35,25);//the dst image size,e.g.100x100
-					resize(imgSrc1,imgSrc1,size);//resize image
-
+					resize(thr,thr,size);//resize image
+					//cout << imgSrc1;
 					//Neural network predict
 					cv::Mat data(1, ATTRIBUTES, CV_32F);
-					Mat dat = imgSrc1.reshape(0,1);
+					Mat dat = thr.reshape(0,1);
 					dat.convertTo(dat, CV_32F);
-					//data = dat.clone();
+					data = dat.clone();
 					//imgSrc1.copyTo(data(Rect(0, 0, imgSrc1.cols, imgSrc1.rows)));
-					//cout<< data.cols;
-					int maxIndex = 0;
+					//cout<< data;
+					int maxIndex =0;
 					cv::Mat classOut(1, CLASSES, CV_32F);
 					nnetwork->predict(data, classOut);
 					float value;
@@ -132,13 +134,16 @@ int main(int argc, char** argv)
 					for (int index = 1; index<CLASSES; index++)
 					{
 						value = classOut.at<float>(0, index);
+						//cout<< "value"<<value <<"\n";
+						//cout<<"maxvalue"<< maxValue <<"\n";
 						if (value>maxValue)
 						{
 							maxValue = value;
 							maxIndex = index;
 						}
 					}
-					cout<<maxIndex <<"\n";
+
+					cout<< maxIndex <<"\n";
 					if(maxIndex == 0){
 						rectangle(src, bounding_rect, Scalar(200, 255, 100), 2, 8, 0);//button color cyan
 					}else if(maxIndex == 1){
@@ -159,11 +164,11 @@ int main(int argc, char** argv)
 					//imwrite("data/data1-"+ is + ".png", src);
 
 					
-				}
+		//		}
 			//}
 			//bounding_rect = boundingRect(contours[i]);
 
-		}
+		//}
 		/*
 		for (int i = 0; i < contours2.size(); i++) // iterate through each contour. 
 		{
@@ -186,11 +191,11 @@ int main(int argc, char** argv)
 		//Scalar color(255, 255, 255);
 		//drawContours(dst, contours, largest_contour_index, color, CV_FILLED, 8, hierarchy); // Draw the largest contour using previously stored index.
 		ys++;
-		imshow("src", src);
+		//imshow("src", src);
 		//imwrite("contour result 1391076a-ed94-4060-8bb7-102e8597f8fe.png", src);
 		y++;
 		//waitKey();
 	//}
 	//imshow("largest Contour", dst);
-	waitKey();
+	//waitKey();
 }
